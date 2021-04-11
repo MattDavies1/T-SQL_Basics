@@ -56,3 +56,24 @@ GROUP BY BestTBl.hacker_id, b.name
 HAVING SUM(BestTBl.best_score) > 0
 ORDER BY SUM(best_score) DESC, BestTBl.hacker_id
 ;
+
+-- SQL Project Planning
+-- Write a query to output the start and end dates of projects listed by the number of days it took to complete the project in ascending order. If there is more than one project that have the same number of completion days, then order by the start date of the project.
+
+SELECT start_date, end_date
+FROM
+    (SELECT start_date, ROW_NUMBER() OVER (ORDER BY start_date) as idx
+    FROM projects
+    WHERE start_date NOT IN (
+        SELECT end_date
+        FROM projects))StartTbl
+LEFT JOIN
+    (SELECT end_date, ROW_NUMBER() OVER (ORDER BY end_date) as idx
+    FROM projects
+    WHERE end_date NOT IN (
+        SELECT start_date
+        FROM projects))EndTbl
+ON StartTbl.idx = EndTbl.idx
+ORDER BY DATEDIFF(d, start_date, end_date), start_date
+;
+
