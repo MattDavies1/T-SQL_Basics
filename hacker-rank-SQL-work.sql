@@ -1,6 +1,26 @@
 --Basic Joins
 
+-- "Olivander's Inventory"
+--  Write a query to print the id, age, coins_needed, and power of the wands that Ron's interested in, sorted in order of descending power. If more than one wand has same power, sort the result in order of descending age.
+
+SELECT a.id, b.age, a.coins_needed, a.power
+FROM wands as a
+LEFT JOIN wands_property as b
+ON a.code = b.code
+WHERE b.is_evil = 0
+AND a.coins_needed in (
+    SELECT MIN(a1.coins_needed)
+    FROM wands as a1
+    JOIN wands_property as b1
+    ON a1.code = b1.code
+    WHERE a1.power = a.power
+    AND b1.age = b.age)
+ORDER BY a.power DESC, b.age DESC
+;
+
 -- "Challenges"
+-- get hacker_id, name, and the total number of challenges created by each student. Sort your results by the total number of challenges in descending order. If more than one student created the same number of challenges, then sort the result by hacker_id. If more than one student created the same number of challenges and the count is less than the maximum number of challenges created, then exclude those students from the result.
+
 SELECT a.hacker_id, b.name, COUNT(a.challenge_id)
 FROM challenges a
 LEFT JOIN hackers b
@@ -20,3 +40,4 @@ OR COUNT(a.challenge_id) in (
     HAVING COUNT(counts) = 1)
 ORDER BY count(a.challenge_id) DESC, a.hacker_id
 ;
+
