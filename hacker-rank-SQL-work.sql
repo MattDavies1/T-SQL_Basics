@@ -41,3 +41,18 @@ OR COUNT(a.challenge_id) in (
 ORDER BY count(a.challenge_id) DESC, a.hacker_id
 ;
 
+-- Constest Leaderboard
+-- Write a query to print the hacker_id, name, and total score of the hackers ordered by the descending score. If more than one hacker achieved the same total score, then sort the result by ascending hacker_id. Exclude all hackers with a total score of 0 from your result.
+
+SELECT BestTBl.hacker_id, b.name, SUM(BestTBl.best_score)
+FROM (
+    SELECT hacker_id, challenge_id, MAX(SCORE) as best_score
+    FROM submissions
+    GROUP BY hacker_id, challenge_id
+    )BestTBl
+JOIN hackers b
+ON BestTBl.hacker_id = b.hacker_id
+GROUP BY BestTBl.hacker_id, b.name
+HAVING SUM(BestTBl.best_score) > 0
+ORDER BY SUM(best_score) DESC, BestTBl.hacker_id
+;
