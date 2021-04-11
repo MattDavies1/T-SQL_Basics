@@ -1,4 +1,4 @@
---Basic Joins
+--Joins
 
 -- "Olivander's Inventory"
 --  Write a query to print the id, age, coins_needed, and power of the wands that Ron's interested in, sorted in order of descending power. If more than one wand has same power, sort the result in order of descending age.
@@ -41,7 +41,7 @@ OR COUNT(a.challenge_id) in (
 ORDER BY count(a.challenge_id) DESC, a.hacker_id
 ;
 
--- Constest Leaderboard
+-- "Constest Leaderboard"
 -- Write a query to print the hacker_id, name, and total score of the hackers ordered by the descending score. If more than one hacker achieved the same total score, then sort the result by ascending hacker_id. Exclude all hackers with a total score of 0 from your result.
 
 SELECT BestTBl.hacker_id, b.name, SUM(BestTBl.best_score)
@@ -57,7 +57,7 @@ HAVING SUM(BestTBl.best_score) > 0
 ORDER BY SUM(best_score) DESC, BestTBl.hacker_id
 ;
 
--- SQL Project Planning
+-- "SQL Project Planning"
 -- Write a query to output the start and end dates of projects listed by the number of days it took to complete the project in ascending order. If there is more than one project that have the same number of completion days, then order by the start date of the project.
 
 SELECT start_date, end_date
@@ -76,4 +76,26 @@ LEFT JOIN
 ON StartTbl.idx = EndTbl.idx
 ORDER BY DATEDIFF(d, start_date, end_date), start_date
 ;
+
+-- "Placements"
+-- Write a query to output the names of those students whose best friends got offered a higher salary than them. Names must be ordered by the salary amount offered to the best friends. It is guaranteed that no two students got same salary offer.
+
+WITH names_null AS (
+SELECT
+CASE WHEN friend_salary > salary THEN name END as names,
+friend_salary
+FROM (
+    SELECT a.id, a.name, c.salary as salary, b.friend_id, d.salary as friend_salary
+    FROM students as a
+    JOIN friends as b
+    ON a.id = b.id
+    JOIN packages as c
+    ON a.id = c.id
+    JOIN packages as d
+    ON b.friend_id = d.id)Tbl)
+SELECT names FROM names_null
+WHERE names IS NOT NULL
+ORDER BY friend_salary
+;
+
 
