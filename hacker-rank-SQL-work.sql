@@ -111,3 +111,39 @@ GROUP BY a.x, a.y
 HAVING COUNT(*) > 1 OR a.x <a.y
 ORDER BY a.x
 ;
+
+-- "Interviews"
+-- Samantha interviews many candidates from different colleges using coding challenges and contests. Write a query to print the contest_id, hacker_id, name, and the sums of total_submissions, total_accepted_submissions, total_views, and total_unique_views for each contest sorted by contest_id. Exclude the contest from the result if all four sums are 0 Note: A specific contest can be used to screen candidates at more than one college, but each college only holds 1 screening 
+
+SELECT a.contest_id
+    , a.hacker_id
+    , a.name
+    , SUM(total_submissions)
+    , SUM(total_accepted_submissions)
+    , SUM(total_views)
+    , SUM(total_unique_views)
+FROM contests as a
+JOIN colleges as b
+ON a.contest_id = b.contest_id
+JOIN challenges as c
+ON b.college_id = c.college_id
+LEFT JOIN (
+    SELECT challenge_id
+        , SUM(total_submissions) as total_submissions
+        , SUM(total_accepted_submissions) as total_accepted_submissions
+    FROM submission_stats
+    GROUP BT challenge_id) d
+ON c.challenge_id = d.challenge_id
+LEFT JOIN (
+    SELECT challenge_id
+        , SUM(total_views) as total_views
+        , SUM(total_unique_views) as total_unique_views
+    FROM views_stats
+    GROUP BY challenge_id) e
+ON c.challenge_id = e.challenge_id
+GROUP BY a.contest_id
+    , a.hacker_id
+    , a.name
+HAVING SUM(total_submissions) + SUM(total_accepted_submissions) + SUM(total_views) + SUM(total_unique_views) > 0
+ORDER BY a.contest_id
+;
